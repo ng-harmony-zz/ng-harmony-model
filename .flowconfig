@@ -1,0 +1,16 @@
+[ignore]
+.*/node_modules/fbjs/lib/Deferred
+.*/node_modules/fbjs/lib/PromiseMap
+.*/node_modules/.*/test/
+
+[include]
+./build/index.js
+
+[libs]
+
+[options]
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+
+[version]
+0.0.1
