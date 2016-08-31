@@ -55,13 +55,13 @@ export class Model {
     }
     serialize () {
         let json = {};
-        Object.getOwnPropertyNames(this).forEach((p, i, list) => {
+        Object.keys(this).forEach((p, i, list) => {
             json[p] = this[p] instanceof Model ? this[p].serialize() : this[p];
         });
         return json;
     }
     deserialize (data, soft: boolean = false) {
-        Object.getOwnPropertyNames(this).forEach((p, i, list) => {
+        Object.keys(this).forEach((p, i, list) => {
             try {
                 this[p] = data[p] || null;
             } catch (e) {
@@ -75,9 +75,24 @@ export class Model {
     }
 }
 
-export class MirrorModel extends Model { }
-export class ClientModel extends Model {
-    //dynamicViews
+export class IOTransform {
+    in () {}
+    out () {}
+}
+
+@Implements(IOTransform)
+export class PropertyTransformer {
+    derived = {};
+    constructor (data) {
+        if (typeof data !== "undefined" && data !== null) {
+            this.in(data);
+        }
+    }
+    in (o) {
+        Object.keys(o).forEach((k, i) => {
+            this.derived[k] = o[k];
+        });
+    }
 }
 
 export class CRUD {
@@ -99,7 +114,7 @@ export class MirrorService extends Service {
         REFRESH: null,
         REFRESH_INTERVAL: null
     };
-    static RECEPTOR: Array<ClientModel> = [];
+    static RECEPTOR: Array<Model> = [];
 
     constructor (...args) {
         super(...args);
@@ -124,8 +139,8 @@ export class MirrorService extends Service {
     }
     digest (status) {
         let json = this.store.serialize();
-        this.constructor.RECEPTOR.forEach((dynamicModel, i, receptors) => {
-            dynamicModel.deserialize(json);
+        this.constructor.RECEPTOR.forEach((model, i, receptors) => {
+            model.deserialize(json);
         });
     }
 }
@@ -141,8 +156,17 @@ export class FirebaseService extends MirrorService {
 
     }
 }
+
+export class AjaxService extends MirrorService {
+
+}
+
+export class GithubService extends AjaxService {
+
+}
 ```
 
 ## CHANGELOG
-
+*v0.0.3* ClientModel Transformer
+*v0.0.2* ConcreteServices, DynamicViewModel aka ClientModel
 *v0.0.1* File Structure ... plus got carried away in hacking the foundation

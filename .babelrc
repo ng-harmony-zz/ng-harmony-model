@@ -1,7 +1,7 @@
 {
     "presets": ["es2017"],
-    "plugins": ["transform-flow-strip-types",
-                "type-metadata",
+    "plugins": ["type-metadata",
+                "transform-flow-strip-types",
                 "transform-class-properties",
                 "transform-decorators-legacy"]
 }
