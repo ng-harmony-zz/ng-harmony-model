@@ -1,0 +1,15 @@
+{
+    "presets": ["lint-consistent", "lint-recommended"],
+    "plugins": {
+        "lint": {
+            "list-item-indent": false,
+            "code-block-style": "consistent",
+            "fenced-code-flag": {
+                "allow-empty": false
+            },
+            "heading-style": "consistent",
+            "no-file-name-irregular-characters": "\\.a-zA-Z0-9-_",
+            "no-file-name-mixed-case": true
+        }
+    }
+}
