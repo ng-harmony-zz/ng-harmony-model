@@ -43,9 +43,12 @@ Not to be forgotten:
 ```javascript
 // @flow
 import "whatwg-fetch";
-import { Service } from "ng-harmony/ng-harmony";
+import { Service } from "ng-harmony-core";
 import "ng-harmony-log";
+import { Logging, Implements, Mixin } from "ng-harmony-decorator";
 ```
+
+The _Model_ Class is a Base for data-validation and dynamicViews/deriveds, and in itself, can work with json and output json.
 
 ```javascript
 @Logging()
@@ -74,7 +77,9 @@ export class Model {
         });
     }
 }
-
+```
+The Transformer Classes are the building blocks for deriveds/DynamicViews
+```javascript
 export class IOTransform {
     in () {}
     out () {}
@@ -139,8 +144,8 @@ export class MirrorService extends Service {
     }
     digest (status) {
         let json = this.store.serialize();
-        this.constructor.RECEPTOR.forEach((model, i, receptors) => {
-            model.deserialize(json);
+        this.constructor.RECEPTOR.forEach((ctrl, i, receptors) => {
+            ctrl.$scope.model.deserialize(json);
         });
     }
 }
@@ -167,6 +172,7 @@ export class GithubService extends AjaxService {
 ```
 
 ## CHANGELOG
+*v0.0.4* Migration of Base Service hereabouts
 *v0.0.3* ClientModel Transformer
 *v0.0.2* ConcreteServices, DynamicViewModel aka ClientModel
 *v0.0.1* File Structure ... plus got carried away in hacking the foundation
