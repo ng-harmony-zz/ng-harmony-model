@@ -31,21 +31,10 @@ All Models derive from that class and implement - via `decorators` - their
 own validating mechanisms for each property.
 Please use ES7-class-properties ...
 
-Also, storage is implemented via Adapters, extendibly
-
-Not to be forgotten:
-* In order to ease duplication pains we use _facebook flow_ for type validation
-* In order to further standards compliance I try to use
-    - _ES2017 async/await_ whereever feasable
-    - _ES2016 Promises_ instead of angular $q
-    - fetch polyfill instead of angular $http
-
 ```javascript
-// @flow
-import "whatwg-fetch";
 import { Service } from "ng-harmony-core";
 import "ng-harmony-log";
-import { Logging, Implements, Mixin } from "ng-harmony-decorator";
+import { Logging } from "ng-harmony-decorator";
 ```
 
 The _Model_ Class is a Base for data-validation and dynamicViews/deriveds, and in itself, can work with json and output json.
@@ -53,7 +42,7 @@ The _Model_ Class is a Base for data-validation and dynamicViews/deriveds, and i
 ```javascript
 @Logging()
 export class Model {
-    constructor(data) {
+    constructor(data) {        
         data && this.deserialize(data, true);
     }
     serialize () {
@@ -61,7 +50,7 @@ export class Model {
         Object.keys(this).forEach((p, i, list) => {
             json[p] = this[p] instanceof Model ? this[p].serialize() : this[p];
         });
-        return json;
+        return JSON.stringify(json);
     }
     deserialize (data, soft: boolean = false) {
         Object.keys(this).forEach((p, i, list) => {
@@ -77,101 +66,26 @@ export class Model {
         });
     }
 }
-```
-The Transformer Classes are the building blocks for deriveds/DynamicViews
-```javascript
-export class IOTransform {
-    in () {}
-    out () {}
-}
 
-@Implements(IOTransform)
-export class PropertyTransformer {
-    derived = {};
-    constructor (data) {
-        if (typeof data !== "undefined" && data !== null) {
-            this.in(data);
-        }
-    }
-    in (o) {
-        Object.keys(o).forEach((k, i) => {
-            this.derived[k] = o[k];
-        });
-    }
-}
-
-export class CRUD {
-    create () {}
-    read () {}
-    update () {}
-    delete () {}
-}
-
-@Implements(CRUD)
-export class MirrorService extends Service {
-    store: MirrorModel;
-    _state = {
-        initialized: false,
-        idle: true
-    };
-    static TIMEOUT = {
-        ERROR: 3000,
-        REFRESH: null,
-        REFRESH_INTERVAL: null
-    };
-    static RECEPTOR: Array<Model> = [];
-
-    constructor (...args) {
+export class AjaxService extends Service {
+    constructor(...args) {
         super(...args);
 
-        if (typeof this.constructor.TIMEOUT.REFRESH === "number" &&
-            this.constructor.TIMEOUT.REFRESH > 0 &&
-            typeof this.constructor.TIMEOUT.REFRESH_INTERVAL === "undefined") {
-            this.constructor.TIMEOUT.REFRESH_INTERVAL = this.setInterval(this.constructor.TIMEOUT.REFRESH, this.read);
-        }
+        this.constructor.MAP.forEach((tile) => {
+            Object.defineProperty(this.constructor.prototype, tile.method, {
+                configurable: true,
+                enumerable: false,
+                value: () => {
+                    return this.$http(tile);
+                }
+            });
+        })
     }
-
-    get state () {
-        return this._state;
-    }
-    set state(o) {
-        if (typeof o.initialized !== "undefined") {
-            this._state.initialized = o.initialized;
-        }
-        if (typeof o.idle !== "undefined") {
-            this._state.idle = o.idle;
-        }
-    }
-    digest (status) {
-        let json = this.store.serialize();
-        this.constructor.RECEPTOR.forEach((ctrl, i, receptors) => {
-            ctrl.$scope.model.deserialize(json);
-        });
-    }
-}
-
-export class FirebaseService extends MirrorService {
-    create () {
-
-    }
-    read () {
-
-    }
-    update () {
-
-    }
-}
-
-export class AjaxService extends MirrorService {
-
-}
-
-export class GithubService extends AjaxService {
-
 }
 ```
 
 ## CHANGELOG
+*v0.0.5* Minimalism - getting rid of anything too fancy
 *v0.0.4* Migration of Base Service hereabouts
 *v0.0.3* ClientModel Transformer
 *v0.0.2* ConcreteServices, DynamicViewModel aka ClientModel
