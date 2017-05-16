@@ -1,7 +1,7 @@
 {
   "name": "ng-harmony-model",
   "description": "In-Memory-DB, Storage, Adapters, DB, $scope",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "homepage": "https://github.com/ng-harmony/ng-harmony-model",
   "author": {
     "name": "joehannes",
@@ -34,7 +34,11 @@
     "transpile_umd": "babel --modules umd -e 1 -s -o ./build/modules/umd_module.js ./build/index.js",
     "modules": "npm run transpile_amd && npm run transpile_common && npm run transpile_system && npm run transpile_umd"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ng-harmony-core": "^0.1.2",
+    "ng-harmony-decorator": "^0.3.13",
+    "ng-harmony-log": "^0.1.7"
+  },
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-plugin-transform-class-properties": "^6.11.5",
