@@ -85,6 +85,7 @@ export class AjaxService extends Service {
 ```
 
 ## CHANGELOG
+*v0.0.6* Publish bump
 *v0.0.5* Minimalism - getting rid of anything too fancy
 *v0.0.4* Migration of Base Service hereabouts
 *v0.0.3* ClientModel Transformer
